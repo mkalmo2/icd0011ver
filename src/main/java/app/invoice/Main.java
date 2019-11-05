@@ -16,16 +16,6 @@ public class Main {
 
         repo.save(new Invoice(null, "invoice_v1"));
 
-        repo.save(new Invoice(100L, "invoice_v2"));
-
-        System.out.println(repo.findById(100L));
-
-//        LocalDateTime moment = LocalDate.parse("2019-01-01").atStartOfDay();
-//
-//        System.out.println(repo.findById(1L));
-//
-//        System.out.println(repo.findById(1L, moment));
-
     }
 
 }

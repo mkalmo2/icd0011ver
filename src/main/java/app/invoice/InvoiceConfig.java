@@ -14,8 +14,7 @@ public class InvoiceConfig {
     @Bean
     public ResourceDatabasePopulator schemaFileName() {
         return new ResourceDatabasePopulator(
-                new ClassPathResource("invoice_schema.sql"),
-                new ClassPathResource("invoice_data.sql"));
+                new ClassPathResource("invoice_schema.sql"));
     }
 
 }

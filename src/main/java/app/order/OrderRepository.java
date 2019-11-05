@@ -20,30 +20,20 @@ public class OrderRepository {
         }
     }
 
-    private void update(Order order) {
-
-        String lockQuery = "SELECT * FROM orders WHERE id = ? FOR UPDATE";
-
-        template.queryForMap(lockQuery, order.getId());
-
-        String copyQuery = "INSERT INTO orders_history(id, number, version)" +
-                           "  SELECT id, number, version" +
-                           "  FROM orders WHERE id = ?";
-
-        template.update(copyQuery, order.getId());
-
-        String updateQuery = "UPDATE orders " +
-                             "  SET number = ?, version = version + 1 " +
-                             "WHERE id = ?";
-
-        template.update(updateQuery, order.getOrderNumber(), order.getId());
-    }
-
     private void insert(Order order) {
         String sql = "INSERT INTO orders (number, version) " +
                      "VALUES (?, 1)";
-
-        template.update(sql, order.getOrderNumber());
     }
+
+    private void update(Order order) {
+        String lockQuery = "SELECT * FROM orders WHERE id = ? FOR UPDATE";
+        String copyQuery = "INSERT INTO orders_history(id, number, version)" +
+                           "  SELECT id, number, version" +
+                           "  FROM orders WHERE id = ?";
+        String updateQuery = "UPDATE orders " +
+                             "  SET number = ?, version = version + 1 " +
+                             "WHERE id = ?";
+    }
+
 
 }

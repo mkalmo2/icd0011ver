@@ -9,11 +9,7 @@ public class Main {
 
         OrderRepository repo = ctx.getBean(OrderRepository.class);
 
-        repo.save(new Order(null, "o123_v1"));
-
-        repo.save(new Order(1L, "o123_v2"));
-
-        repo.save(new Order(1L, "o123_v3"));
+        repo.save(new Order(null, "o1_v1"));
 
     }
 }
