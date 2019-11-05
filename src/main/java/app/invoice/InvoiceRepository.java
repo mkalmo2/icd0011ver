@@ -34,8 +34,8 @@ public class InvoiceRepository {
         String lockQuery = "SELECT * FROM invoice WHERE id = ? FOR UPDATE";
         String copyQuery = "INSERT INTO invoice(id, number, start_date, end_date)" +
                            "  SELECT id, number, start_date, now()" +
-                           "  FROM invoice WHERE id = ?";
-        String updateQuery = "UPDATE invoice SET number = ? " +
+                           "  FROM invoice WHERE id = ? AND end_date IS NULL";
+        String updateQuery = "UPDATE invoice SET number = ?, start_date = now() " +
                              "WHERE id = ? AND end_date IS NULL";
     }
 
