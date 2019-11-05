@@ -1,0 +1,66 @@
+buildscript {
+    dependencies {
+        classpath group: 'org.hsqldb',
+                  name: 'hsqldb',
+                  version: '2.5.0'
+    }
+}
+
+plugins {
+    id 'java'
+    id "org.flywaydb.flyway" version "6.0.7"
+}
+
+sourceCompatibility = 11
+
+repositories {
+    jcenter()
+}
+
+def springVersion = '5.2.0.RELEASE'
+def flywayVersion = '6.0.7'
+def lombokVersion = '1.18.10'
+
+dependencies {
+
+    compile group: 'org.hsqldb',
+            name: 'hsqldb',
+            version: '2.5.0'
+
+    compile group: 'org.springframework',
+            name: 'spring-context',
+            version: springVersion
+
+    compile group: 'org.springframework',
+            name: 'spring-jdbc',
+            version: springVersion
+
+    compileOnly group: 'org.flywaydb',
+            name: 'flyway-core',
+            version: flywayVersion
+
+    compileOnly group: 'org.projectlombok',
+            name: 'lombok',
+            version: lombokVersion
+
+    annotationProcessor group: 'org.projectlombok',
+            name: 'lombok',
+            version: lombokVersion
+
+}
+
+// ./gradlew flywayInfo
+// ./gradlew clean build flywayMigrate -i
+
+flyway {
+    def props = new Properties()
+
+    file("src/main/resources/application.properties")
+            .withInputStream { props.load(it) }
+
+    url = props.getProperty("db.url")
+    user = props.getProperty("db.user")
+    password = props.getProperty("db.pass")
+
+    locations = ['classpath:flyway']
+}
