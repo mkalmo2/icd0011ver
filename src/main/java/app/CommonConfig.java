@@ -18,7 +18,6 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = { "app" })
 @PropertySource("classpath:/application.properties")
 public class CommonConfig {
 
