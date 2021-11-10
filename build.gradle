@@ -20,6 +20,8 @@ repositories {
 def springVersion = '5.3.12'
 def flywayVersion = '8.0.2'
 def lombokVersion = '1.18.22'
+def hibernateVersion = '5.6.1.Final'
+def log4jVersion = '2.14.1'
 
 dependencies {
 
@@ -46,6 +48,29 @@ dependencies {
     annotationProcessor group: 'org.projectlombok',
             name: 'lombok',
             version: lombokVersion
+
+    // for hibernate @Audit demo only
+
+    implementation group: 'org.hibernate',
+            name: 'hibernate-core',
+            version: hibernateVersion
+
+    implementation group: 'org.hibernate',
+            name: 'hibernate-envers',
+            version: hibernateVersion
+
+    implementation group: 'org.springframework',
+            name: 'spring-orm',
+            version: springVersion
+
+    implementation group: 'org.apache.logging.log4j',
+            name: 'log4j-api',
+            version: log4jVersion
+
+    implementation group: 'org.apache.logging.log4j',
+            name: 'log4j-core',
+            version: log4jVersion
+
 
 }
 
