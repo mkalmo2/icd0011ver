@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 public class create_joining_entries extends BaseJavaMigration {
+
+    @Override
     public void migrate(Context context) {
 
         var template = new JdbcTemplate(
