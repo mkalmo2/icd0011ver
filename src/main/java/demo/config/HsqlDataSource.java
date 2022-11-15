@@ -12,14 +12,8 @@ import javax.sql.DataSource;
 @PropertySource("classpath:/application.properties")
 public class HsqlDataSource {
 
-    private Environment env;
-
-    public HsqlDataSource(Environment env) {
-        this.env = env;
-    }
-
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource(Environment env) {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("org.hsqldb.jdbcDriver");
         ds.setUrl(env.getProperty("db.url"));
