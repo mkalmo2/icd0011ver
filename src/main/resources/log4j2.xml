@@ -10,7 +10,7 @@
 
         <Logger name="org.hibernate.SQL" level="warn"/>
 
-        <Root level="warn">
+        <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

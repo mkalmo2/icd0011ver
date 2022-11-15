@@ -1,0 +1,8 @@
+Get info about pending migrations
+
+  ./gradlew clean build flywayInfo
+
+Apply pending migrations
+
+  ./gradlew clean build flywayMigrate -i
+

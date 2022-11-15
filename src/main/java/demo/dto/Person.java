@@ -3,7 +3,7 @@ package demo.dto;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
