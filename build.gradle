@@ -11,18 +11,20 @@ plugins {
     id "org.flywaydb.flyway" version "9.7.0"
 }
 
-sourceCompatibility = 17
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 
 repositories {
     mavenCentral()
-    maven { url "https://repo.spring.io/milestone/" }
 }
 
-def springVersion = '6.0.0-RC1'
-def flywayVersion = '9.7.0'
-def lombokVersion = '1.18.24'
-def hibernateVersion = '6.1.5.Final'
-def log4jVersion = '2.19.0'
+def springVersion = '6.0.13'
+def flywayVersion = '9.16.0'
+def lombokVersion = '1.18.26'
+def hibernateVersion = '6.1.7.Final'
+def log4jVersion = '2.20.0'
 
 dependencies {
 
@@ -71,7 +73,6 @@ dependencies {
     implementation group: 'org.apache.logging.log4j',
             name: 'log4j-core',
             version: log4jVersion
-
 
 }
 

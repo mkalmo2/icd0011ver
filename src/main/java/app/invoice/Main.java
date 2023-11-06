@@ -1,11 +1,6 @@
 package app.invoice;
 
-import app.CommonConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class Main {
 
