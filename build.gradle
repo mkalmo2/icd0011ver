@@ -27,7 +27,7 @@ repositories {
 def springVersion = '6.0.13'
 def flywayVersion = '10.0.0'
 def lombokVersion = '1.18.30'
-def hibernateVersion = '6.3.1.Final'
+def hibernateVersion = '6.2.13.Final'
 def log4jVersion = '2.21.1'
 
 dependencies {
