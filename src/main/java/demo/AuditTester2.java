@@ -2,7 +2,6 @@ package demo;
 
 import demo.config.JpaConfig;
 import demo.config.HsqlDataSource;
-import demo.dto.Address;
 import demo.dto.Person;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -26,7 +25,7 @@ public class AuditTester2 {
             em.getTransaction().begin();
 
             var person = new Person("Alice Smith");
-            person.setAddress(new Address("Pine Street 1"));
+            person.addPhone("123");
             em.persist(person);
 
             em.getTransaction().commit();
@@ -34,7 +33,6 @@ public class AuditTester2 {
             em.getTransaction().begin();
 
             person.setName("Alice Jones");
-            person.getAddress().setStreet("Birch Street 5");
 
             em.getTransaction().commit();
 

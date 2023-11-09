@@ -5,6 +5,9 @@ import org.hibernate.envers.Audited;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -20,7 +23,16 @@ public class Person {
     @NonNull
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Address address;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "person_id")
+    private List<Phone> phones = new ArrayList<>();
+
+    public void addPhone(String number) {
+        phones.add(new Phone(number));
+    }
+
+    public void removePhone(String number) {
+        phones.removeIf(it -> it.getNumber().equals(number));
+    }
 
 }
