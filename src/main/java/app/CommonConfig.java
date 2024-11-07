@@ -3,7 +3,7 @@ package app;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
@@ -17,14 +17,9 @@ import javax.sql.DataSource;
 @PropertySource("classpath:/application.properties")
 public class CommonConfig {
 
-    public Environment env;
-
-    public CommonConfig(Environment env) {
-        this.env = env;
-    }
-
     @Bean
-    public DataSource dataSource(ResourceDatabasePopulator populator) {
+    public DataSource dataSource(
+            ResourceDatabasePopulator populator, Environment env) {
 
         SingleConnectionDataSource ds = new SingleConnectionDataSource();
         ds.setDriverClassName("org.hsqldb.jdbcDriver");
@@ -38,8 +33,8 @@ public class CommonConfig {
     }
 
     @Bean
-    public JdbcTemplate getTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+    public JdbcClient getJdbcClient(DataSource dataSource) {
+        return JdbcClient.create(dataSource);
     }
 
     @Bean

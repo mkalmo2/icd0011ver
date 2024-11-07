@@ -2,7 +2,7 @@ buildscript {
     dependencies {
         classpath group: 'org.hsqldb',
                   name: 'hsqldb',
-                  version: '2.7.2'
+                  version: '2.7.3'
 
         classpath group: 'org.flywaydb',
                 name: 'flyway-database-hsqldb',
@@ -12,11 +12,11 @@ buildscript {
 
 plugins {
     id 'java'
-    id "org.flywaydb.flyway" version "10.0.0"
+    id "org.flywaydb.flyway" version "10.20.1"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 
@@ -24,17 +24,17 @@ repositories {
     mavenCentral()
 }
 
-def springVersion = '6.0.13'
-def flywayVersion = '10.0.0'
-def lombokVersion = '1.18.30'
-def hibernateVersion = '6.2.13.Final'
-def log4jVersion = '2.21.1'
+def springVersion = '6.1.14'
+def flywayVersion = '10.20.1'
+def lombokVersion = '1.18.34'
+def hibernateVersion = '6.6.1.Final'
+def log4jVersion = '2.23.1'
 
 dependencies {
 
     implementation group: 'org.hsqldb',
             name: 'hsqldb',
-            version: '2.7.2'
+            version: '2.7.3'
 
     implementation group: 'org.springframework',
             name: 'spring-context',
@@ -80,7 +80,7 @@ dependencies {
 
     testImplementation group: 'org.junit.jupiter',
             name: 'junit-jupiter-api',
-            version: '5.10.0'
+            version: '5.10.3'
 
     testImplementation group: 'org.hamcrest',
             name: 'hamcrest',
@@ -88,7 +88,7 @@ dependencies {
 
     testRuntimeOnly group: 'org.junit.jupiter',
             name: 'junit-jupiter-engine',
-            version: '5.10.0'
+            version: '5.10.2'
 }
 
 flyway {

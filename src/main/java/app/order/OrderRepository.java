@@ -1,16 +1,16 @@
 package app.order;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class OrderRepository {
 
-    private JdbcTemplate template;
+    private final JdbcClient jdbcClient;
 
-    public OrderRepository(JdbcTemplate template) {
-        this.template = template;
+    public OrderRepository(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
     }
 
     @Transactional

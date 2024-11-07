@@ -1,6 +1,6 @@
 package app.invoice;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,10 +10,10 @@ import java.util.List;
 @Repository
 public class InvoiceRepository {
 
-    private JdbcTemplate template;
+    private final JdbcClient jdbcClient;
 
-    public InvoiceRepository(JdbcTemplate template) {
-        this.template = template;
+    public InvoiceRepository(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
     }
 
     @Transactional

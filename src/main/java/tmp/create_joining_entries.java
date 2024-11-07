@@ -2,7 +2,7 @@ package tmp;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 public class create_joining_entries extends BaseJavaMigration {
@@ -10,7 +10,7 @@ public class create_joining_entries extends BaseJavaMigration {
     @Override
     public void migrate(Context context) {
 
-        var template = new JdbcTemplate(
+        var jdbcClient = JdbcClient.create(
                 new SingleConnectionDataSource(context.getConnection(), true));
 
         String selectQuery = "SELECT person_id, id AS phone_id " +
