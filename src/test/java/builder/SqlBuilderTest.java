@@ -2,12 +2,13 @@ package builder;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
+import static builder.SqlBuilder.param;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class SqlBuilderTest {
 
@@ -34,10 +35,10 @@ public class SqlBuilderTest {
         SqlBuilder b = new SqlBuilder()
             .selectColumn("a")
             .from("t")
-            .where("id = ?", 1);
+            .where("id = :id", param("id", 1));
 
-        assertThat(b.getSql(), is("select a from t where id = ?"));
-        assertThat(b.getParameters(), contains(1));
+        assertThat(b.getSql(), is("select a from t where id = :id"));
+        assertThat(b.getParameters().get("id"), is(1));
 
     }
 
@@ -61,8 +62,9 @@ public class SqlBuilderTest {
             .eqIfNotNull("b", null)
             .eqIfNotNull("c", 3);
 
-        assertThat(b.getSql(), is("select a from t where a = ? and c = ?"));
-        assertThat(b.getParameters(), is(Arrays.asList(1, 3)));
+        assertThat(b.getSql(), is("select a from t where a = :p1 and c = :p2"));
+        assertThat(b.getParameters().get("p1"), is(1));
+        assertThat(b.getParameters().get("p2"), is(3));
     }
 
     @Test
@@ -72,8 +74,9 @@ public class SqlBuilderTest {
             .from("t")
             .in("id", List.of(1, 2));
 
-        assertThat(b.getSql(), is("select a from t where id in (?, ?)"));
-        assertThat(b.getParameters(), contains(1, 2));
+        assertThat(b.getSql(), is("select a from t where id in (:p1, :p2)"));
+        assertThat(b.getParameters().get("p1"), is(1));
+        assertThat(b.getParameters().get("p2"), is(2));
     }
 
     @Test
@@ -97,6 +100,37 @@ public class SqlBuilderTest {
             .from(sub);
 
         assertThat(b.getSql(), is("select a from (select b from t)"));
+    }
+
+    @Test
+    public void supportsHistoryQueries() {
+        SqlBuilder b = new SqlBuilder()
+                .selectColumn("a")
+                .from("t")
+                .withQueryTime(LocalDateTime.now());
+
+        String expected = "select a from t " +
+                "where start_date <= :qt " +
+                "and (end_date > :qt or end_date IS NULL)";
+
+        assertThat(b.getSql(), is(expected));
+        assertThat(b.getParameters().get("qt"), is(notNullValue()));
+    }
+
+    @Test
+    public void supportsHistoryQueriesInJoins() {
+        SqlBuilder b = new SqlBuilder()
+                .selectColumn("a")
+                .from("t")
+                .leftJoin("u", "u.id = t.u_id")
+                .withQueryTime(LocalDateTime.now());
+
+        String expected = "select a from t left " +
+                "join u on u.id = t.u_id and start_date <= :qt and (end_date > :qt or end_date IS NULL) " +
+                "where start_date <= :qt and (end_date > :qt or end_date IS NULL)";
+
+        assertThat(b.getSql(), is(expected));
+        assertThat(b.getParameters().get("qt"), is(notNullValue()));
     }
 }
 

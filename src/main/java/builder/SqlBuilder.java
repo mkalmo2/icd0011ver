@@ -1,19 +1,22 @@
 package builder;
 
+import java.sql.Timestamp;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 public class SqlBuilder {
 
-    private List<String> columns = new ArrayList<>();
-    private List<String> whereConditions = new ArrayList<>();
-    private List<String> joinedTables = new ArrayList<>();
+    private final List<String> columns = new ArrayList<>();
+    private final List<String> whereConditions = new ArrayList<>();
+    private final List<String> joinedTables = new ArrayList<>();
+    private final Map<String, Object> parameters = new HashMap<>();
+
     private String table;
-    private List<Object> parameters = new ArrayList<>();
+    private Timestamp queryTime;
+    private int labelCounter = 1;
 
     public SqlBuilder selectColumn(String column) {
         columns.add(column);
@@ -30,9 +33,9 @@ public class SqlBuilder {
         return this;
     }
 
-    public SqlBuilder where(String condition, Object parameter) {
+    public SqlBuilder where(String condition, Parameter param) {
         whereConditions.add(condition);
-        parameters.add(parameter);
+        parameters.put(param.name, param.value);
         return this;
     }
 
@@ -41,20 +44,26 @@ public class SqlBuilder {
         return this;
     }
 
-    public List<Object> getParameters() {
-        return Collections.unmodifiableList(parameters);
+    public SqlBuilder withQueryTime(LocalDateTime time) {
+        queryTime = Timestamp.valueOf(time);
+        return this;
+    }
+
+    public Map<String, Object> getParameters() {
+        return Collections.unmodifiableMap(parameters);
     }
 
     public SqlBuilder eqIfNotNull(String column, Object parameter) {
         if (parameter != null) {
-            whereConditions.add(MessageFormat.format("{0} = ?", column));
-            parameters.add(parameter);
+            String label = nextLabel();
+            whereConditions.add(MessageFormat.format("{0} = :{1}", column, label));
+            parameters.put(label, parameter);
         }
         return this;
     }
 
     public SqlBuilder leftJoin(String table, String condition) {
-        joinedTables.add(MessageFormat.format(" left join {0} on {1}", table, condition));
+        joinedTables.add(MessageFormat.format("left join {0} on {1}", table, condition));
         return this;
     }
 
@@ -63,12 +72,15 @@ public class SqlBuilder {
             return this;
         }
 
-        String questionMarks = Arrays.stream(new Integer[parameters.size()])
-                .map(each -> "?")
-                .collect(Collectors.joining(", "));
+        List<String> labels = new ArrayList<>();
+        for (Object param : parameters) {
+            String label = nextLabel();
+            labels.add(":" + label);
+            this.parameters.put(label, param);
+        }
 
-        whereConditions.add(MessageFormat.format("{0} in ({1})", column, questionMarks));
-        this.parameters.addAll(parameters);
+        whereConditions.add(MessageFormat.format("{0} in ({1})",
+                column, String.join(", ", labels)));
 
         return this;
     }
@@ -82,15 +94,41 @@ public class SqlBuilder {
         String query = MessageFormat.format("select {0} from {1}",
                 String.join(", ", columns), table);
 
+        if (!joinedTables.isEmpty()) {
+            String condition = queryTime != null
+                ? " and start_date <= :qt and (end_date > :qt or end_date IS NULL)"
+                : "";
+
+            query += " " + joinedTables.stream()
+                    .map(each -> each + condition)
+                    .collect(Collectors.joining(" "));
+        }
+
+        ArrayList<String> whereConditions = new ArrayList<>(this.whereConditions);
+        if (queryTime != null) {
+            whereConditions.add("start_date <= :qt");
+            whereConditions.add("(end_date > :qt or end_date IS NULL)");
+        }
+
         if (!whereConditions.isEmpty()) {
             query += " where " + String.join(" and ", whereConditions);
         }
 
-        if (!joinedTables.isEmpty()) {
-            query += String.join(" ", joinedTables);
+        if (queryTime != null) {
+            parameters.put("qt", queryTime);
         }
 
         return query;
     }
+
+    private String nextLabel() {
+        return "p" + labelCounter++;
+    }
+
+    public static Parameter param(String name, Object value) {
+        return new Parameter(name, value);
+    }
+
+    public record Parameter(String name, Object value) {}
 
 }
