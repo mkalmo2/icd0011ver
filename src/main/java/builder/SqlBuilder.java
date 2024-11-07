@@ -1,10 +1,7 @@
 package builder;
 
-import java.sql.Timestamp;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class SqlBuilder {
@@ -15,7 +12,6 @@ public class SqlBuilder {
     private final Map<String, Object> parameters = new HashMap<>();
 
     private String table;
-    private Timestamp queryTime;
     private int labelCounter = 1;
 
     public SqlBuilder selectColumn(String column) {
@@ -45,8 +41,7 @@ public class SqlBuilder {
     }
 
     public SqlBuilder withQueryTime(LocalDateTime time) {
-        queryTime = Timestamp.valueOf(time);
-        return this;
+        throw new RuntimeException("not implemented yet");
     }
 
     public Map<String, Object> getParameters() {
@@ -56,7 +51,7 @@ public class SqlBuilder {
     public SqlBuilder eqIfNotNull(String column, Object parameter) {
         if (parameter != null) {
             String label = nextLabel();
-            whereConditions.add(MessageFormat.format("{0} = :{1}", column, label));
+            whereConditions.add(String.format("%s = :%s", column, label));
             parameters.put(label, parameter);
         }
         return this;
@@ -79,14 +74,14 @@ public class SqlBuilder {
             this.parameters.put(label, param);
         }
 
-        whereConditions.add(MessageFormat.format("{0} in ({1})",
+        whereConditions.add(String.format("%s in (%s)",
                 column, String.join(", ", labels)));
 
         return this;
     }
 
     public SqlBuilder from(SqlBuilder sub) {
-        table = MessageFormat.format("({0})", sub.getSql());
+        table = String.format("(%s)", sub.getSql());
         return this;
     }
 
@@ -100,19 +95,8 @@ public class SqlBuilder {
             query += " " + String.join(" ", joinClauses);
         }
 
-        ArrayList<String> whereConditions = new ArrayList<>(this.whereConditions);
-        if (queryTime != null) {
-            whereConditions.add(String.format("%s.start_date <= :qt", table));
-            whereConditions.add(String.format("(%s.end_date > :qt or %s.end_date IS NULL)",
-                    table, table));
-        }
-
         if (!whereConditions.isEmpty()) {
             query += " where " + String.join(" and ", whereConditions);
-        }
-
-        if (queryTime != null) {
-            parameters.put("qt", queryTime);
         }
 
         return query;
@@ -123,13 +107,6 @@ public class SqlBuilder {
         for (JoinedTable each : joinedTables) {
             joinClauses.add(String.format("left join %s on %s",
                     each.name, each.condition));
-
-            if (queryTime != null) {
-                String timeCondition = String.format(
-                        "and %s.start_date <= :qt and (%s.end_date > :qt or %s.end_date IS NULL)",
-                        each.name, each.name, each.name);
-                joinClauses.add(timeCondition);
-            }
         }
         return joinClauses;
     }
