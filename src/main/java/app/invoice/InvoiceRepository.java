@@ -43,19 +43,14 @@ public class InvoiceRepository {
     public List<Invoice> findById(Long invoiceId) {
         String sql = "SELECT id, number " +
                      "FROM invoice " +
-                     "WHERE id = ? AND end_date IS NULL";
+                     "WHERE id = :id AND end_date IS NULL";
 
         return null;
     }
 
     public List<Invoice> findById(Long invoiceId, LocalDateTime moment) {
-        String sql = "SELECT id, number FROM invoice " +
-                     "WHERE id = ? " +
-                     "  AND start_date <= ? " +
-                     "  AND (end_date > ? OR end_date IS NULL)";
+        // SqlBuilder builder = ...
 
         return null;
     }
-
-
 }

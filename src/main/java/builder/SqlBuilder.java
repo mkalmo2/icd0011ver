@@ -11,7 +11,7 @@ public class SqlBuilder {
 
     private final List<String> columns = new ArrayList<>();
     private final List<String> whereConditions = new ArrayList<>();
-    private final List<String> joinedTables = new ArrayList<>();
+    private final List<JoinedTable> joinedTables = new ArrayList<>();
     private final Map<String, Object> parameters = new HashMap<>();
 
     private String table;
@@ -62,8 +62,8 @@ public class SqlBuilder {
         return this;
     }
 
-    public SqlBuilder leftJoin(String table, String condition) {
-        joinedTables.add(MessageFormat.format("left join {0} on {1}", table, condition));
+    public SqlBuilder leftJoin(String tableName, String condition) {
+        joinedTables.add(new JoinedTable(tableName, condition));
         return this;
     }
 
@@ -91,23 +91,20 @@ public class SqlBuilder {
     }
 
     public String getSql() {
-        String query = MessageFormat.format("select {0} from {1}",
+        String query = String.format("select %s from %s",
                 String.join(", ", columns), table);
 
-        if (!joinedTables.isEmpty()) {
-            String condition = queryTime != null
-                ? " and start_date <= :qt and (end_date > :qt or end_date IS NULL)"
-                : "";
+        ArrayList<String> joinClauses = getJoinClauses();
 
-            query += " " + joinedTables.stream()
-                    .map(each -> each + condition)
-                    .collect(Collectors.joining(" "));
+        if (!joinClauses.isEmpty()) {
+            query += " " + String.join(" ", joinClauses);
         }
 
         ArrayList<String> whereConditions = new ArrayList<>(this.whereConditions);
         if (queryTime != null) {
-            whereConditions.add("start_date <= :qt");
-            whereConditions.add("(end_date > :qt or end_date IS NULL)");
+            whereConditions.add(String.format("%s.start_date <= :qt", table));
+            whereConditions.add(String.format("(%s.end_date > :qt or %s.end_date IS NULL)",
+                    table, table));
         }
 
         if (!whereConditions.isEmpty()) {
@@ -121,6 +118,22 @@ public class SqlBuilder {
         return query;
     }
 
+    private ArrayList<String> getJoinClauses() {
+        ArrayList<String> joinClauses = new ArrayList<>();
+        for (JoinedTable each : joinedTables) {
+            joinClauses.add(String.format("left join %s on %s",
+                    each.name, each.condition));
+
+            if (queryTime != null) {
+                String timeCondition = String.format(
+                        "and %s.start_date <= :qt and (%s.end_date > :qt or %s.end_date IS NULL)",
+                        each.name, each.name, each.name);
+                joinClauses.add(timeCondition);
+            }
+        }
+        return joinClauses;
+    }
+
     private String nextLabel() {
         return "p" + labelCounter++;
     }
@@ -130,5 +143,7 @@ public class SqlBuilder {
     }
 
     public record Parameter(String name, Object value) {}
+
+    public record JoinedTable(String name, String condition) {}
 
 }

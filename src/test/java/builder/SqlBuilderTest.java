@@ -110,8 +110,8 @@ public class SqlBuilderTest {
                 .withQueryTime(LocalDateTime.now());
 
         String expected = "select a from t " +
-                "where start_date <= :qt " +
-                "and (end_date > :qt or end_date IS NULL)";
+                "where t.start_date <= :qt " +
+                "and (t.end_date > :qt or t.end_date IS NULL)";
 
         assertThat(b.getSql(), is(expected));
         assertThat(b.getParameters().get("qt"), is(notNullValue()));
@@ -126,8 +126,8 @@ public class SqlBuilderTest {
                 .withQueryTime(LocalDateTime.now());
 
         String expected = "select a from t left " +
-                "join u on u.id = t.u_id and start_date <= :qt and (end_date > :qt or end_date IS NULL) " +
-                "where start_date <= :qt and (end_date > :qt or end_date IS NULL)";
+                "join u on u.id = t.u_id and u.start_date <= :qt and (u.end_date > :qt or u.end_date IS NULL) " +
+                "where t.start_date <= :qt and (t.end_date > :qt or t.end_date IS NULL)";
 
         assertThat(b.getSql(), is(expected));
         assertThat(b.getParameters().get("qt"), is(notNullValue()));
