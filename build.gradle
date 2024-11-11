@@ -40,7 +40,7 @@ dependencies {
             name: 'spring-jdbc',
             version: springVersion
 
-    compileOnly group: 'org.flywaydb',
+    implementation group: 'org.flywaydb',
             name: 'flyway-core',
             version: flywayVersion
 

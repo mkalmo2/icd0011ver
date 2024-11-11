@@ -15,7 +15,7 @@ public class OrderRepository {
 
     @Transactional
     public void save(Order order) {
-        if (order.getId() == null) {
+        if (order.id() == null) {
             insert(order);
         } else {
             update(order);
@@ -23,18 +23,28 @@ public class OrderRepository {
     }
 
     private void insert(Order order) {
-        String sql = "INSERT INTO orders (number, version) " +
-                     "VALUES (?, 1)";
+        String sql = """
+                     INSERT INTO orders (number, version)
+                     VALUES (:number, 1)""";
+
+
     }
 
     private void update(Order order) {
-        String lockQuery = "SELECT * FROM orders WHERE id = ? FOR UPDATE";
-        String copyQuery = "INSERT INTO orders_history(id, number, version)" +
-                           "  SELECT id, number, version" +
-                           "  FROM orders WHERE id = ?";
-        String updateQuery = "UPDATE orders " +
-                             "  SET number = ?, version = version + 1 " +
-                             "WHERE id = ?";
+        String lockQuery = "SELECT * FROM orders WHERE id = :id FOR UPDATE";
+
+        String copyQuery = """
+                              INSERT INTO orders_history(id, number, version)
+                                SELECT id, number, version
+                                FROM orders WHERE id = :id""";
+
+        String updateQuery = """
+                             UPDATE orders
+                               SET number = :number, version = version + 1
+                               WHERE id = :id""";
+
+
+
     }
 
 
