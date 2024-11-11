@@ -1,18 +1,14 @@
 buildscript {
     dependencies {
-        classpath group: 'org.hsqldb',
-                  name: 'hsqldb',
-                  version: '2.7.3'
-
         classpath group: 'org.flywaydb',
                 name: 'flyway-database-hsqldb',
-                version: '10.0.0'
+                version: '10.21.0'
     }
 }
 
 plugins {
     id 'java'
-    id "org.flywaydb.flyway" version "10.20.1"
+    id "org.flywaydb.flyway" version "10.21.0"
 }
 
 java {
