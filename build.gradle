@@ -99,3 +99,11 @@ flyway {
 
     locations = ['classpath:flyway']
 }
+
+tasks.flywayInfo {
+    dependsOn 'processResources'
+}
+
+tasks.flywayMigrate {
+    dependsOn 'processResources'
+}
