@@ -17,27 +17,24 @@ public class AuditTester2 {
               new AnnotationConfigApplicationContext(
                       JpaConfig.class, HsqlDataSource.class);
 
-        try (ctx) {
+        EntityManagerFactory factory = ctx.getBean(EntityManagerFactory.class);
+        EntityManager em = factory.createEntityManager();
 
-            EntityManagerFactory factory = ctx.getBean(EntityManagerFactory.class);
-            EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
 
-            em.getTransaction().begin();
+        var person = new Person("Alice Smith");
+        person.addPhone("123");
+        em.persist(person);
 
-            var person = new Person("Alice Smith");
-            person.addPhone("123");
-            em.persist(person);
+        em.getTransaction().commit();
 
-            em.getTransaction().commit();
+        em.getTransaction().begin();
 
-            em.getTransaction().begin();
+        person.setName("Alice Jones");
 
-            person.setName("Alice Jones");
+        em.getTransaction().commit();
 
-            em.getTransaction().commit();
-
-            em.close();
-        }
+        em.close();
     }
 }
 

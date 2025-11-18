@@ -20,40 +20,37 @@ public class AuditTester3 {
               new AnnotationConfigApplicationContext(
                       JpaConfig.class, HsqlDataSource.class);
 
-        try (ctx) {
+        EntityManagerFactory factory = ctx.getBean(EntityManagerFactory.class);
+        EntityManager em = factory.createEntityManager();
 
-            EntityManagerFactory factory = ctx.getBean(EntityManagerFactory.class);
-            EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
 
-            em.getTransaction().begin();
+        var person = new Person("Alice Smith");
+        person.addPhone("123");
+        person.addPhone("456");
+        em.persist(person);
 
-            var person = new Person("Alice Smith");
-            person.addPhone("123");
-            person.addPhone("456");
-            em.persist(person);
+        em.getTransaction().commit();
 
-            em.getTransaction().commit();
+        Date date = new Date();
 
-            Date date = new Date();
+        em.getTransaction().begin();
 
-            em.getTransaction().begin();
+        person.setName("Alice Jones");
+        person.removePhone("123");
+        person.addPhone("789");
 
-            person.setName("Alice Jones");
-            person.removePhone("123");
-            person.addPhone("789");
+        em.getTransaction().commit();
 
-            em.getTransaction().commit();
+        Person p1 = em.find(Person.class, 1L);
 
-            Person p1 = em.find(Person.class, 1L);
+        AuditReader reader = AuditReaderFactory.get(em);
+        Person p2 = reader.find(Person.class, 1L, date);
 
-            AuditReader reader = AuditReaderFactory.get(em);
-            Person p2 = reader.find(Person.class, 1L, date);
+        System.out.println(p1);
+        System.out.println(p2);
 
-            System.out.println(p1);
-            System.out.println(p2);
-
-            em.close();
-        }
+        em.close();
     }
 }
 

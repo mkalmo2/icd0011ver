@@ -2,13 +2,13 @@ buildscript {
     dependencies {
         classpath group: 'org.flywaydb',
                 name: 'flyway-database-hsqldb',
-                version: '10.21.0'
+                version: '11.17.0'
     }
 }
 
 plugins {
     id 'java'
-    id "org.flywaydb.flyway" version "10.21.0"
+    id "org.flywaydb.flyway" version "11.17.0"
 }
 
 java {
@@ -20,11 +20,11 @@ repositories {
     mavenCentral()
 }
 
-def springVersion = '6.1.14'
-def flywayVersion = '10.20.1'
-def lombokVersion = '1.18.34'
-def hibernateVersion = '6.6.1.Final'
-def log4jVersion = '2.23.1'
+def springVersion = '7.0.0'
+def flywayVersion = '11.17.0'
+def lombokVersion = '1.18.42'
+def hibernateVersion = '7.1.8.Final'
+def log4jVersion = '2.25.2'
 
 dependencies {
 
